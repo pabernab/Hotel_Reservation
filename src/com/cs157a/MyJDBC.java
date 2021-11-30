@@ -12,6 +12,12 @@ public class MyJDBC {
 
 
 
+        /*
+        test any of the functions you write here.
+        important note: our mysql databases will have different usernames and passwords,
+        so change the code as necessary to make the connections work.
+         */
+
 
         Scanner input = new Scanner(System.in);
         System.out.println("Are you a returning user? Press 1 for yes and 2 for no.");
