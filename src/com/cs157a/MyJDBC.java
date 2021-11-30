@@ -203,7 +203,7 @@ public class MyJDBC {
         //insert code here
     }
 
-    public static void adminReservations()
+    public static void adminReservations(int adminID)
     {
         //paul
         //insert code here
