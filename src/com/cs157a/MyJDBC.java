@@ -18,7 +18,6 @@ public class MyJDBC {
         so change the code as necessary to make the connections work.
          */
 
-
         Scanner input = new Scanner(System.in);
         System.out.println("Are you a returning user? Press 1 for yes and 2 for no.");
         int numb = input.nextInt();
@@ -56,19 +55,7 @@ public class MyJDBC {
 
                 }
         }
-
-
-
         }
-
-
-
-
-
-
-
-
-
     }
 
     public static void login(String userID){
@@ -177,24 +164,142 @@ public class MyJDBC {
     {
         //jonathan
         // insert code here. use any parameters as needed.
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
+                    "password");
+
+            System.out.print("Enter reservation Id: ");
+            int reservationID = scan.nextInt();
+
+            System.out.print("Room id: ");
+            int roomID = scan.nextInt();
+
+            System.out.println("Start date(format: yyyy-mm-dd): ");
+            String startDate = scan.next();
+
+            System.out.println("End date(format: yyyy-mm-dd): ");
+            String endDate = scan.next();
+
+            scan.close();
+
+            PreparedStatement stmt = connection.prepareStatement(
+                    "update reservation set roomId = ?, startDate = ?, endDate = ?, " +
+                            "updatedAt = current_date where rID = ? ");
+
+            stmt.setInt(1, roomID);
+            stmt.setDate(2, Date.valueOf(startDate));
+            stmt.setDate(3, Date.valueOf(endDate));
+            stmt.setInt(4, reservationID);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void cancelReservation()
     {
         //jonathan
         //insert code here. use any parameters as needed
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
+                    "password");
+
+            System.out.print("Enter reservation Id: ");
+            int reservationID = scan.nextInt();
+
+            System.out.print("Enter user id: ");
+            int userID = scan.nextInt();
+
+            scan.close();
+
+            PreparedStatement stmt = connection.prepareStatement(
+                    "delete from reservation where rID = ? and uID = ? ");
+
+            stmt.setInt(1, reservationID);
+            stmt.setInt(2, userID);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void orderRoomService()
     {
         //jonathan
         //insert code here. use any parameters as needed
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
+                    "password");
+
+            System.out.print("Enter payment Id: ");
+            int pID = scan.nextInt();
+
+            System.out.print("Reservation id: ");
+            int reservationID = scan.nextInt();
+
+
+            System.out.print("Amount: ");
+            int amount = scan.nextInt();
+
+            scan.close();
+
+            PreparedStatement stmt = connection.prepareStatement(
+                    "insert into `payment` (pId, rId, amount, serviceType)  values(?, ?, ? , ?)");
+
+            stmt.setInt(1, pID);
+            stmt.setInt(2, reservationID);
+            stmt.setInt(3, amount);
+            stmt.setString(4, "Room Service");
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void useGym()
     {
         //jonathan
         //insert code here.
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
+                    "password");
+
+            System.out.print("Enter payment Id: ");
+            int pID = scan.nextInt();
+
+            System.out.print("Reservation id: ");
+            int reservationID = scan.nextInt();
+
+
+            System.out.print("Amount: ");
+            int amount = scan.nextInt();
+
+            scan.close();
+
+            PreparedStatement stmt = connection.prepareStatement(
+                    "insert into `payment` (pId, rId, amount, serviceType)  values(?, ?, ? , ?)");
+
+            stmt.setInt(1, pID);
+            stmt.setInt(2, reservationID);
+            stmt.setInt(3, amount);
+            stmt.setString(4, "Gym");
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void usePool()
