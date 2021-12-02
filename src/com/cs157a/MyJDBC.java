@@ -302,29 +302,132 @@ public class MyJDBC {
 
     }
 
-    public static void usePool()
-    {
-        //trey
-        //insert code here
-    }
+
 
     public static void adminReservations(int adminID)
     {
-        //paul
-        //insert code here
+        if (adminID > 8999)
+        {
+            try {
+
+                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+                Statement statement = connection.createStatement();
+
+                ResultSet resultSet = statement.executeQuery("select * from reservation");
+                ResultSetMetaData rsmd = resultSet.getMetaData();
+                int columnsNumber = rsmd.getColumnCount();
+
+                while (resultSet.next()) {
+                    for (int i = 1; i <= columnsNumber; i++) {
+                        if (i > 1) System.out.print(",  ");
+                        String columnValue = resultSet.getString(i);
+                        System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                    }
+                    System.out.println("");
+                }
+
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            System.out.println("That is not a Admin ID. Exiting...");
+            return;
+        }
+
     }
 
     public static void adminCheckRoom()
     {
         //paul
         //insert code here
+        try {
+
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select roomID from reservations, room where isOccupied = false and reservations.roomID = room.roomID");
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = resultSet.getString(i);
+                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                }
+                System.out.println("");
+            }
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public static void cleanRoom()
     {
         //paul
         //insert code here
+        try {
+
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select roomID from room where cleaned = false");
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = resultSet.getString(i);
+                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                }
+                System.out.println("");
+            }
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
+
+    public static void adminCheckIn()
+    {
+        //paul
+        //insert code here
+        try {
+
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select name, uID, isOccupied from user, reservation, room where getDate() >= startDate or getDate() <= endDate");
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = resultSet.getString(i);
+                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                }
+                System.out.println("");
+            }
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
 
     public static void checkReservationDate()
     {
@@ -333,6 +436,12 @@ public class MyJDBC {
     }
 
     public static void calculateTotal()
+    {
+        //trey
+        //insert code here
+    }
+
+    public static void usePool()
     {
         //trey
         //insert code here
