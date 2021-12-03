@@ -406,7 +406,9 @@ public class MyJDBC {
 
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("select name, uID, isOccupied from user, reservation, room where getDate() >= startDate or getDate() <= endDate");
+            ResultSet resultSet = statement.executeQuery("select name, reservation.uID, room.roomID, isOccupied\n" +
+                    "from user natural join reservation natural join room\n" +
+                    "where current_date() >= startDate or current_date() <= endDate\n");
             ResultSetMetaData rsmd = resultSet.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
 
@@ -453,37 +455,4 @@ public class MyJDBC {
 
     }
 
-    /*
 
-    public static void insertIntoDatabase(String name, String age){
-        try {
-
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
-
-            Statement statement = connection.createStatement();
-
-            PreparedStatement stmt = connection.prepareStatement("insert into user(uID, name, age) values (?, ?, ?");
-            stmt.setString(2, name);
-            stmt.setString(3, age);
-
-
-            ResultSet resultSet = statement.executeQuery("select * from reservation where uID = " + userID);
-            ResultSetMetaData rsmd = resultSet.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
-
-            while (resultSet.next()) {
-                for (int i = 1; i <= columnsNumber; i++) {
-                    if (i > 1) System.out.print(",  ");
-                    String columnValue = resultSet.getString(i);
-                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
-                }
-                System.out.println("");
-            }
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-
-     */
