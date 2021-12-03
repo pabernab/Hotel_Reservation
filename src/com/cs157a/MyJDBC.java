@@ -10,8 +10,6 @@ public class MyJDBC {
     public static void main(String[] args)
     {
 
-
-
         /*
         test any of the functions you write here.
         important note: our mysql databases will have different usernames and passwords,
@@ -108,7 +106,7 @@ public class MyJDBC {
             scan.close();
 
             PreparedStatement stmt = connection.prepareStatement(
-                    "insert into `reservation` (uID, roomID, startDate, endDate, updatedAt)  values(?, ?, ? , ?, current_date )");
+                    "insert into `reservation` (uID, roomID, startDate, endDate, dateReserved, updatedAt)  values(?, ?, ? , ?,current_date, current_date )");
 
             stmt.setInt(1, userId);
             stmt.setInt(2, roomID);
@@ -252,7 +250,7 @@ public class MyJDBC {
             scan.close();
 
             PreparedStatement stmt = connection.prepareStatement(
-                    "insert into `payment` (pId, rId, amount, serviceType)  values(?, ?, ? , ?)");
+                    "insert into `payment` (pId, rId, amount, serviceType, paymentDate)  values(?, ?, ? , ?, current_date)");
 
             stmt.setInt(1, pID);
             stmt.setInt(2, reservationID);
@@ -288,7 +286,7 @@ public class MyJDBC {
             scan.close();
 
             PreparedStatement stmt = connection.prepareStatement(
-                    "insert into `payment` (pId, rId, amount, serviceType)  values(?, ?, ? , ?)");
+                    "insert into `payment` (pId, rId, amount, serviceType, paymentDate)  values(?, ?, ? , ?, current_date )");
 
             stmt.setInt(1, pID);
             stmt.setInt(2, reservationID);
