@@ -35,10 +35,106 @@ public class MyJDBC {
                 {
                     System.out.println("Please enter your user ID:");
                     userID = input.nextLine();
-                    System.out.println("Welcome back! Here are your current reservations: ");
-                    login(userID);
-                    done = true;
-                    break;
+                    int uID  = Integer.parseInt(userID);
+
+                    if (uID > 999 && uID < 8999)
+                    {
+                        System.out.println("Welcome back! Here are your current reservations: ");
+                        login(userID);
+
+                        input.nextLine();
+
+                        int userFunction;
+
+                        userFunction = input.nextInt();
+
+                        System.out.println("What would you like to do? \n"
+                        + "Press 1 to make a reservation. \n"
+                        + "Press 2 to edit a current reservation. \n"
+                        + "Press 3 to cancel a reservation. \n"
+                        + "Press 4 to order room service. \n"
+                        + "Press 5 to pay to use the gym. \n"
+                        + "Press 6 to pay to use the pool. \n"
+                        + "Press 7 to check into your room.\n"
+                        + "Press 8 to check out of your room.\n"
+                        + "Press any other key to exit.");
+
+                        boolean done2 = false;
+
+                        while(!done2) {
+
+                            switch (userFunction) {
+                                case 1: {
+                                    makeReservation();
+                                    break;
+                                }
+
+                                case 2: {
+                                    editReservation();
+                                    break;
+                                }
+
+                                case 3: {
+                                    cancelReservation();
+                                    break;
+                                }
+
+                                case 4: {
+                                    orderRoomService();
+                                    break;
+
+                                }
+
+                                case 5: {
+                                    useGym();
+                                    break;
+
+                                }
+
+                                case 6: {
+                                    usePool();
+                                    break;
+
+                                }
+
+                                case 7: {
+                                    checkIn();
+                                    break;
+
+                                }
+
+                                case 8: {
+
+                                }
+
+                                default: {
+                                    System.out.println("See you later!");
+                                    done2 = true;
+                                    break;
+
+                                }
+
+
+                            }
+                        }
+
+                        done = true;
+                        break;
+                    }
+
+                    else if (uID < 999)
+                    {
+                        System.out.println("That is not a valid userID. Exiting....");
+                        done = true;
+                        break;
+                    }
+
+                    else
+                    {
+                        System.out.println("Admin user identified. What would you like to do?");
+                        int adminFunction;
+
+                    }
 
                 }
 
@@ -48,6 +144,7 @@ public class MyJDBC {
                     name = input.nextLine();
                     System.out.println("Please enter your age.");
                     age = input.nextInt();
+                    System.out.println("Account successfully created. Please login again.");
 
                     done = true;
                     break;
@@ -129,18 +226,20 @@ public class MyJDBC {
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_reservation", "root", "Trey1998$$$");
 
-            System.out.print("Enter user Id: ");
-            int userId = scan.nextInt();
 
             System.out.print("Enter room id: ");
             int roomID = scan.nextInt();
 
+            scan.nextLine();
+
             System.out.println("Enter reservation date(format: yyyy-mm-dd): ");
             String resDate = scan.next();
 
-            PreparedStatement stmt = connection.prepareStatement("insert into `room` (roomID, roomType)  values(?, ?)");
+            PreparedStatement stmt = connection.prepareStatement("update room\n" +
+                    "set isOccupied = 1\n" +
+                    "where roomID in (select reservation.roomID from reservation, user where user.uID = reservation.uID)\n");
 
-            stmt.setInt(1, userId);
+
             stmt.setInt(2, roomID);
             stmt.executeUpdate();
 
@@ -409,7 +508,9 @@ public class MyJDBC {
 
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("select name, uID, isOccupied from user, reservation, room where getDate() >= startDate or getDate() <= endDate");
+            ResultSet resultSet = statement.executeQuery("select name, reservation.uID, room.roomID, isOccupied\n" +
+                    "from user natural join reservation natural join room\n" +
+                    "where current_date() >= startDate or current_date() <= endDate\n");
             ResultSetMetaData rsmd = resultSet.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
 
@@ -456,37 +557,4 @@ public class MyJDBC {
 
     }
 
-    /*
 
-    public static void insertIntoDatabase(String name, String age){
-        try {
-
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
-
-            Statement statement = connection.createStatement();
-
-            PreparedStatement stmt = connection.prepareStatement("insert into user(uID, name, age) values (?, ?, ?");
-            stmt.setString(2, name);
-            stmt.setString(3, age);
-
-
-            ResultSet resultSet = statement.executeQuery("select * from reservation where uID = " + userID);
-            ResultSetMetaData rsmd = resultSet.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
-
-            while (resultSet.next()) {
-                for (int i = 1; i <= columnsNumber; i++) {
-                    if (i > 1) System.out.print(",  ");
-                    String columnValue = resultSet.getString(i);
-                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
-                }
-                System.out.println("");
-            }
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-
-     */
