@@ -16,6 +16,8 @@ public class MyJDBC {
         so change the code as necessary to make the connections work.
          */
 
+        useGym();
+
         Scanner input = new Scanner(System.in);
         System.out.println("Are you a returning user? Press 1 for yes and 2 for no.");
         int numb = input.nextInt();
@@ -89,7 +91,7 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "password");
+                    "jedors123");
 
             System.out.print("Your user Id: ");
             int userId = scan.nextInt();
@@ -166,7 +168,7 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "password");
+                    "jedors123");
 
             System.out.print("Enter reservation Id: ");
             int reservationID = scan.nextInt();
@@ -205,7 +207,7 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "password");
+                    "jedors123");
 
             System.out.print("Enter reservation Id: ");
             int reservationID = scan.nextInt();
@@ -235,7 +237,7 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "password");
+                    "jedors123");
 
             System.out.print("Enter payment Id: ");
             int pID = scan.nextInt();
@@ -250,13 +252,14 @@ public class MyJDBC {
             scan.close();
 
             PreparedStatement stmt = connection.prepareStatement(
-                    "insert into `payment` (pId, rId, amount, serviceType, paymentDate)  values(?, ?, ? , ?, current_date)");
+                    "insert into `payment` (pId, rId, amount, type)  values(?, ?, ? , ?)");
 
             stmt.setInt(1, pID);
             stmt.setInt(2, reservationID);
             stmt.setInt(3, amount);
-            stmt.setString(4, "Room Service");
+            stmt.setString(4, "room service");
             stmt.executeUpdate();
+            System.out.println("Your room service has been ordered");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -271,7 +274,7 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "password");
+                    "jedors123");
 
             System.out.print("Enter payment Id: ");
             int pID = scan.nextInt();
@@ -286,12 +289,12 @@ public class MyJDBC {
             scan.close();
 
             PreparedStatement stmt = connection.prepareStatement(
-                    "insert into `payment` (pId, rId, amount, serviceType, paymentDate)  values(?, ?, ? , ?, current_date )");
+                    "insert into `payment` (pId, rId, amount, type)  values(?, ?, ? , ? )");
 
             stmt.setInt(1, pID);
             stmt.setInt(2, reservationID);
             stmt.setInt(3, amount);
-            stmt.setString(4, "Gym");
+            stmt.setString(4, "gym");
             stmt.executeUpdate();
 
         } catch (Exception e) {
