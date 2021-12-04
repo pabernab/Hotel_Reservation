@@ -16,7 +16,7 @@ public class MyJDBC {
         so change the code as necessary to make the connections work.
          */
 
-        useGym();
+        calculateTotal();
 
         Scanner input = new Scanner(System.in);
         System.out.println("Are you a returning user? Press 1 for yes and 2 for no.");
@@ -57,6 +57,7 @@ public class MyJDBC {
                         + "Press 6 to pay to use the pool. \n"
                         + "Press 7 to check into your room.\n"
                         + "Press 8 to check out of your room.\n"
+
                         + "Press any other key to exit.");
 
                         boolean done2 = false;
@@ -103,8 +104,13 @@ public class MyJDBC {
 
                                 }
 
-                                case 8: {
-
+                                case 9: {
+                                    getReservationsAfter();
+                                    break;
+                                }
+                                case 10: {
+                                    calculateReservationPaymentTotal();
+                                    break;
                                 }
 
                                 default: {
@@ -531,26 +537,112 @@ public class MyJDBC {
 
 
 
-    public static void checkReservationDate()
+    public static void getReservationsAfter()
     {
         //trey
         //insert code here
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
+                    "jedors123");
+
+            System.out.println("Enter Start date(format: yyyy-mm-dd): ");
+            String reservationDate = scan.next();
+            scan.close();
+            PreparedStatement stmt = connection.prepareStatement("select * from reservation where startDate > ?");
+
+            stmt.setDate(1,  Date.valueOf(reservationDate));
+            ResultSet resultSet = stmt.executeQuery();
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+            System.out.println("Here are all the reservation that start after " + reservationDate);
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = resultSet.getString(i);
+                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                }
+                System.out.println("");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public static void calculateTotal()
+    public static void calculateReservationPaymentTotal()
     {
-        //trey
-        //insert code here
+
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
+                    "jedors123");
+
+            System.out.println("Enter the reservation ID: ");
+            int reservationID = scan.nextInt();
+            scan.close();
+
+            PreparedStatement stmt = connection.prepareStatement("select sum(amount) from payment " +
+                    "where rID = ?");
+            stmt.setInt(1,  reservationID);
+
+            ResultSet resultSet = stmt.executeQuery();
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+            while (resultSet.next()) {
+                    String columnValue = resultSet.getString(1);
+                    if(columnValue == null)
+                        System.out.println("No payment made by this reservation");
+                    else
+                        System.out.println("Total payment sum by this reservation was: $" + columnValue);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void usePool()
     {
         //trey
         //insert code here
+        //jonathan
+        //insert code here.
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
+                    "jedors123");
+
+            System.out.print("Enter payment Id: ");
+            int pID = scan.nextInt();
+
+            System.out.print("Reservation id: ");
+            int reservationID = scan.nextInt();
+
+
+            System.out.print("Amount: ");
+            int amount = scan.nextInt();
+
+            scan.close();
+
+            PreparedStatement stmt = connection.prepareStatement(
+                    "insert into `payment` (pId, rId, amount, type)  values(?, ?, ? , ? )");
+
+            stmt.setInt(1, pID);
+            stmt.setInt(2, reservationID);
+            stmt.setInt(3, amount);
+            stmt.setString(4, "pool");
+            stmt.executeUpdate();
+            System.out.println("Payment for pool have been made!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
-
-
 
 
 
