@@ -55,6 +55,7 @@ public class MyJDBC {
                                 + "Press 6 to pay to use the pool. \n"
                                 + "Press 7 to check into your room.\n"
                                 + "Press 8 to check out of your room.\n"
+                                + "Press 9 to see the total amount you have paid, based on your reservation."
                                 + "Press any other key to exit.");
 
                         int userFunction;
@@ -112,6 +113,11 @@ public class MyJDBC {
 
                                 }
 
+                                case 9:
+                                {
+                                    calculateTotal();
+                                }
+
                                 default: {
                                     System.out.println("See you later!");
 
@@ -148,6 +154,7 @@ public class MyJDBC {
                                 + "Press 6 to look at a list of all ID's and names. \n"
                                 + "Press 7 to look at all reservations that start after a specific date.\n"
                                 + "Press 8 to check the total amount paid for a reservations, organized by start date.\n"
+                                         +"Press 9 to archive reservation data.\n"
                                 + "Press any other key to exit.");
 
                         adminFunction = input.nextInt();
@@ -187,15 +194,21 @@ public class MyJDBC {
                             }
 
                             case 7: {
-                                checkIn();
+                               checkReservationDate();
                                 break;
 
                             }
 
                             case 8: {
-                                checkOut();
+                                admincheckPayment();
                                 break;
 
+                            }
+
+                            case 9:
+                            {
+                                archive();
+                                break;
                             }
 
                             default: {
@@ -689,6 +702,9 @@ public class MyJDBC {
 
             Statement statement = connection.createStatement();
 
+
+
+
             ResultSet resultSet = statement.executeQuery("Select * from reservation where roomID in (select roomID from room where roomtype='double') ");
             ResultSetMetaData rsmd = resultSet.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
@@ -714,18 +730,179 @@ public class MyJDBC {
     {
         //trey
         //insert code here
+
+        try {
+
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+
+
+            Scanner scan = new Scanner(System.in);
+
+            System.out.println("Enter Start date(format: yyyy-mm-dd): ");
+            String reservationDate = scan.next();
+            scan.close();
+            PreparedStatement stmt = connection.prepareStatement("select * from reservation where startDate > ?");
+
+            stmt.setDate(1,  Date.valueOf(reservationDate));
+            ResultSet resultSet = stmt.executeQuery();
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+            System.out.println("Here are all the reservation that start after " + reservationDate);
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = resultSet.getString(i);
+                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                }
+                System.out.println("");
+            }
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public static void calculateTotal()
     {
         //trey
         //insert code here
+
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
+                    "Pob9483wtf213!");
+
+            System.out.println("Enter the reservation ID: ");
+            int reservationID = scan.nextInt();
+            scan.close();
+
+            PreparedStatement stmt = connection.prepareStatement("select sum(amount) from payment " +
+                    "where rID = ?");
+            stmt.setInt(1,  reservationID);
+
+            ResultSet resultSet = stmt.executeQuery();
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+            while (resultSet.next()) {
+                String columnValue = resultSet.getString(1);
+                if(columnValue == null)
+                    System.out.println("No payment made by this reservation");
+                else
+                    System.out.println("Total payment sum by this reservation was: $" + columnValue);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void usePool()
     {
         //trey
         //insert code here
+
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
+                    "Pob9483wtf213!");
+
+            System.out.print("Enter payment Id: ");
+            int pID = scan.nextInt();
+
+            System.out.print("Reservation id: ");
+            int reservationID = scan.nextInt();
+
+
+            System.out.print("Amount: ");
+            int amount = scan.nextInt();
+
+            scan.close();
+
+            PreparedStatement stmt = connection.prepareStatement(
+                    "insert into `payment` (pId, rId, amount, type)  values(?, ?, ? , ? )");
+
+            stmt.setInt(1, pID);
+            stmt.setInt(2, reservationID);
+            stmt.setInt(3, amount);
+            stmt.setString(4, "pool");
+            stmt.executeUpdate();
+            System.out.println("Payment for pool have been made!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void admincheckPayment()
+    {
+        //paul
+        //insert code here
+
+        try {
+
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+
+
+            Scanner scan = new Scanner(System.in);
+
+            System.out.println("Enter Start date(format: yyyy-mm-dd): ");
+            String reservationDate = scan.next();
+            PreparedStatement stmt = connection.prepareStatement("Select sum(amount), startDate from payment join reservation on payment.rID=reservation.rID where reservation.startDate > ? group by startDate;");
+
+            stmt.setDate(1,  Date.valueOf(reservationDate));
+
+            ResultSet resultSet = stmt.executeQuery();
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+            System.out.println("The total amount made from reservations that start after " + reservationDate);
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = resultSet.getString(i);
+                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                }
+                System.out.println("");
+            }
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public static void archive()
+    {
+        //paul
+        //insert code here
+
+        try {
+
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+
+
+            Scanner scan = new Scanner(System.in);
+
+            System.out.println("Enter cutoff date(format: yyyy-mm-dd): ");
+            String reservationDate = scan.next();
+            CallableStatement stmt = connection.prepareCall("CALL hotel_system.archive_reservation(?)");
+
+            stmt.setDate(1, Date.valueOf(reservationDate));
+            stmt.executeUpdate();
+
+            System.out.println("Archiving reservations that ended before or on " + reservationDate);
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
 
