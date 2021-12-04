@@ -16,7 +16,7 @@ public class MyJDBC {
         so change the code as necessary to make the connections work.
          */
 
-        useGym();
+
 
         Scanner input = new Scanner(System.in);
         System.out.println("Are you a returning user? Press 1 for yes and 2 for no.");
@@ -42,26 +42,29 @@ public class MyJDBC {
                         System.out.println("Welcome back! Here are your current reservations: ");
                         login(userID);
 
-                        input.nextLine();
+                        System.out.println();
+
+
+
+                        System.out.println("What would you like to do? \n"
+                                + "Press 1 to make a reservation. \n"
+                                + "Press 2 to edit a current reservation. \n"
+                                + "Press 3 to cancel a reservation. \n"
+                                + "Press 4 to order room service. \n"
+                                + "Press 5 to pay to use the gym. \n"
+                                + "Press 6 to pay to use the pool. \n"
+                                + "Press 7 to check into your room.\n"
+                                + "Press 8 to check out of your room.\n"
+                                + "Press any other key to exit.");
 
                         int userFunction;
 
                         userFunction = input.nextInt();
 
-                        System.out.println("What would you like to do? \n"
-                        + "Press 1 to make a reservation. \n"
-                        + "Press 2 to edit a current reservation. \n"
-                        + "Press 3 to cancel a reservation. \n"
-                        + "Press 4 to order room service. \n"
-                        + "Press 5 to pay to use the gym. \n"
-                        + "Press 6 to pay to use the pool. \n"
-                        + "Press 7 to check into your room.\n"
-                        + "Press 8 to check out of your room.\n"
-                        + "Press any other key to exit.");
 
                         boolean done2 = false;
 
-                        while(!done2) {
+
 
                             switch (userFunction) {
                                 case 1: {
@@ -104,18 +107,20 @@ public class MyJDBC {
                                 }
 
                                 case 8: {
+                                    checkOut();
+                                    break;
 
                                 }
 
                                 default: {
                                     System.out.println("See you later!");
-                                    done2 = true;
+
                                     break;
 
                                 }
 
 
-                            }
+
                         }
 
                         done = true;
@@ -133,6 +138,78 @@ public class MyJDBC {
                     {
                         System.out.println("Admin user identified. What would you like to do?");
                         int adminFunction;
+
+                        System.out.println(
+                                 "Press 1 to see a list of all reservations. \n"
+                                + "Press 2 to check the available rooms.\n"
+                                + "Press 3 to see names paired with each reservation. \n"
+                                + "Press 4 to see which reservations have double rooms. \n"
+                                + "Press 5 to see who is checked in and checked out of their rooms. \n"
+                                + "Press 6 to look at a list of all ID's and names. \n"
+                                + "Press 7 to look at all reservations that start after a specific date.\n"
+                                + "Press 8 to check the total amount paid for a reservations, organized by start date.\n"
+                                + "Press any other key to exit.");
+
+                        adminFunction = input.nextInt();
+
+                        switch (adminFunction) {
+                            case 1: {
+                                adminReservations();
+                                break;
+                            }
+
+                            case 2: {
+                                adminCheckRoom();
+                                break;
+                            }
+
+                            case 3: {
+                                adminPair();
+                                break;
+                            }
+
+                            case 4: {
+                                doubleRooms();
+                                break;
+
+                            }
+
+                            case 5: {
+                                adminCheckIn();
+                                break;
+
+                            }
+
+                            case 6: {
+                                adminListALl();
+                                break;
+
+                            }
+
+                            case 7: {
+                                checkIn();
+                                break;
+
+                            }
+
+                            case 8: {
+                                checkOut();
+                                break;
+
+                            }
+
+                            default: {
+                                System.out.println("See you later!");
+
+                                break;
+
+                            }
+
+
+
+                        }
+                        done = true;
+                        break;
 
                     }
 
@@ -188,7 +265,7 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "jedors123");
+                    "Pob9483wtf213!");
 
             System.out.print("Your user Id: ");
             int userId = scan.nextInt();
@@ -205,7 +282,7 @@ public class MyJDBC {
             scan.close();
 
             PreparedStatement stmt = connection.prepareStatement(
-                    "insert into `reservation` (uID, roomID, startDate, endDate, dateReserved, updatedAt)  values(?, ?, ? , ?,current_date, current_date )");
+                    "insert into `reservation` (rID, uID, roomID, startDate, endDate, updatedAt, dateReserved)  values(11, ?, ?, ? , ?, current_date(), current_date())");
 
             stmt.setInt(1, userId);
             stmt.setInt(2, roomID);
@@ -224,7 +301,7 @@ public class MyJDBC {
         try {
 
             Scanner scan = new Scanner(System.in);
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_reservation", "root", "Trey1998$$$");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
 
 
             System.out.print("Enter room id: ");
@@ -232,22 +309,62 @@ public class MyJDBC {
 
             scan.nextLine();
 
-            System.out.println("Enter reservation date(format: yyyy-mm-dd): ");
+            System.out.println("Enter reservation start date(format: yyyy-mm-dd): ");
             String resDate = scan.next();
 
             PreparedStatement stmt = connection.prepareStatement("update room\n" +
                     "set isOccupied = 1\n" +
-                    "where roomID in (select reservation.roomID from reservation, user where user.uID = reservation.uID)\n");
+                    "where roomID = ?\n");
 
 
-            stmt.setInt(2, roomID);
+            stmt.setInt(1, roomID);
             stmt.executeUpdate();
 
             if (resDate.equals(LocalDate.now().toString())){
                 System.out.println("Thank you for checking in!");
             }
             else{
-                System.out.println("Your reservation is not for today!");
+                System.out.println("Your reservation is not for today or you checked in late. Please see someone at the help desk to make a new reservation.");
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static void checkOut()
+    {
+
+        try {
+
+            Scanner scan = new Scanner(System.in);
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+
+            System.out.print("Enter room id: ");
+            int roomID = scan.nextInt();
+
+            scan.nextLine();
+
+            System.out.println("Enter reservation end date(format: yyyy-mm-dd): ");
+            String resDate = scan.next();
+
+            PreparedStatement stmt = connection.prepareStatement("update room\n" +
+                    "set isOccupied = 0\n" +
+                    "where roomID = ?\n");
+
+
+            stmt.setInt(1, roomID);
+            stmt.executeUpdate();
+
+            if (resDate.equals(LocalDate.now().toString())){
+                System.out.println("Thank you for checking out!");
+            }
+            else{
+                System.out.println("Your reservation is not over yet!");
             }
 
 
@@ -267,7 +384,7 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "jedors123");
+                    "Pob9483wtf213!");
 
             System.out.print("Enter reservation Id: ");
             int reservationID = scan.nextInt();
@@ -306,7 +423,7 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "jedors123");
+                    "Pob9483wtf213!");
 
             System.out.print("Enter reservation Id: ");
             int reservationID = scan.nextInt();
@@ -336,13 +453,17 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "jedors123");
+                    "Pob9483wtf213!");
 
             System.out.print("Enter payment Id: ");
             int pID = scan.nextInt();
 
+            scan.nextLine();
+
             System.out.print("Reservation id: ");
             int reservationID = scan.nextInt();
+
+            scan.nextLine();
 
 
             System.out.print("Amount: ");
@@ -373,7 +494,7 @@ public class MyJDBC {
 
             Scanner scan = new Scanner(System.in);
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root",
-                    "jedors123");
+                    "Pob9483wtf213!");
 
             System.out.print("Enter payment Id: ");
             int pID = scan.nextInt();
@@ -404,10 +525,9 @@ public class MyJDBC {
 
 
 
-    public static void adminReservations(int adminID)
+    public static void adminReservations()
     {
-        if (adminID > 8999)
-        {
+
             try {
 
                 Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
@@ -431,12 +551,7 @@ public class MyJDBC {
             {
                 e.printStackTrace();
             }
-        }
-        else
-        {
-            System.out.println("That is not a Admin ID. Exiting...");
-            return;
-        }
+
 
     }
 
@@ -450,7 +565,7 @@ public class MyJDBC {
 
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("select roomID from reservations, room where isOccupied = false and reservations.roomID = room.roomID");
+            ResultSet resultSet = statement.executeQuery("select roomID from room where isOccupied = 0");
             ResultSetMetaData rsmd = resultSet.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
 
@@ -469,7 +584,7 @@ public class MyJDBC {
         }
     }
 
-    public static void cleanRoom()
+    public static void adminListALl()
     {
         //paul
         //insert code here
@@ -479,7 +594,11 @@ public class MyJDBC {
 
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("select roomID from room where cleaned = false");
+            ResultSet resultSet = statement.executeQuery("select adminID as IDs, name\n" +
+                    "from admin\n" +
+                    "union\n" +
+                    "select uID, name\n" +
+                    "from user\n");
             ResultSetMetaData rsmd = resultSet.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
 
@@ -511,6 +630,66 @@ public class MyJDBC {
             ResultSet resultSet = statement.executeQuery("select name, reservation.uID, room.roomID, isOccupied\n" +
                     "from user natural join reservation natural join room\n" +
                     "where current_date() >= startDate or current_date() <= endDate\n");
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = resultSet.getString(i);
+                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                }
+                System.out.println("");
+            }
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void adminPair()
+    {
+        //paul
+        //insert code here
+        try {
+
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select user.UID, name, age, rID, roomID, startDate, endDate, updatedAt\n" +
+                    "from user\n" +
+                    "right outer join reservation on user.uID = reservation.uID\n");
+            ResultSetMetaData rsmd = resultSet.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = resultSet.getString(i);
+                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                }
+                System.out.println("");
+            }
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void doubleRooms()
+    {
+        //paul
+        //insert code here
+        try {
+
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_system", "root", "Pob9483wtf213!");
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("Select * from reservation where roomID in (select roomID from room where roomtype='double') ");
             ResultSetMetaData rsmd = resultSet.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
 
